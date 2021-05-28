@@ -3,6 +3,9 @@ import zipfile
 from bs4 import BeautifulSoup
 import os
 
+def FormatString(string):
+    return string.replace('\"', "\\\"").replace('\n', '').encode("ascii", errors="ignore").decode()
+
 def ExtractHtmls(file_name):
     with zipfile.ZipFile(f"{file_name}.zip", 'r') as zip_ref:
         zip_ref.extractall()
@@ -16,8 +19,8 @@ def ExtractHtmls(file_name):
         with open(file, 'r', encoding='ISO-8859-1') as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
             content = {
-                "title": soup.title.string.replace('\"', "\\\"").replace('\n', ''),
-                "body": soup.get_text().replace('\"', "\\\"").replace('\n', '')
+                "title": FormatString(soup.title.string),
+                "body": FormatString(soup.get_text())
             }
             contents.append(content)
     return contents
@@ -32,4 +35,5 @@ html_contents = ExtractHtmls(args.input)
 with open(args.output + '.json', 'w', encoding="utf-8") as output_file:
     for content in html_contents:
         output_file.write("{\"index\":{}}\n")
-        output_file.write("{\"title\":\"" + content["title"] + "\",\n \"body\":\"" + content["body"] + "\"}\n")
+        output_file.write("{ \"title\":\"" + content["title"] + "\", \"body\":\"" + content["body"] + "\"}\n")
+        #\"title\":\"" + content["title"] + "\",\n 
