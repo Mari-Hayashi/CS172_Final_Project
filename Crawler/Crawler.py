@@ -25,13 +25,19 @@ class Crawler:
         self.setlock = threading.Lock()
         self.start = time.time()
 
-    def crawl(self, link):
+    def crawl(self, link, root):
         page = requests.get(link)
         soup = BeautifulSoup(page.content, "html.parser") 
         for link in soup.find_all("a"):
             if "href" in link.attrs:
                 new_link = link.attrs["href"] 
-                self.queue.put(new_link)
+                if new_link[0] == "#":
+                    continue
+                elif new_link[0] == "/":
+                    self.queue.put(root + new_link)
+                else:
+                    new_link = URLHandler.no_prefix_link(new_link) 
+                    self.queue.put(new_link)
         return str(soup)
 
     def crawl_worker(self):
@@ -44,19 +50,6 @@ class Crawler:
             robots_link = URLHandler.robots_link(seed)
             seed_dir = DATA_PATH + root_link
             print(f"{seed} started at {start - self.start:.2f}")
-
-            """
-            Debugging:
-
-            print(f"Seed: {seed}")
-            print(f"Root Link: {root_link}")
-            print(f"No Prefix Link: {no_prefix_link}")
-            print(f"Prefix Link: {prefix_link}")
-            print(f"Robots Link: {robots_link}")
-            print(f"Seed Directory: {seed_dir}")
-    
-            """
-
 
             update = False
             try:
