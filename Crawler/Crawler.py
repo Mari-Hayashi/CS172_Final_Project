@@ -31,7 +31,9 @@ class Crawler:
         for link in soup.find_all("a"):
             if "href" in link.attrs:
                 new_link = link.attrs["href"] 
-                if new_link[0] == "#":
+                if len(new_link) == 0:
+                    continue
+                elif new_link[0] == "#":
                     continue
                 elif new_link[0] == "/":
                     self.queue.put(root + new_link)
@@ -70,9 +72,20 @@ class Crawler:
                 time.sleep(1)
                 
             if update:
-                html = self.crawl(prefix_link)
+                html = self.crawl(prefix_link, root_link)
                 file_link = re.sub("/", ".", no_prefix_link)
-                with open(DATA_PATH + f"{root_link}/{file_link}", 'w') as html_file:
+
+                try:
+                    os.mkdir(f"{DATA_PATH}")
+                except:
+                    pass
+
+                try: 
+                    os.mkdir(f"{DATA_PATH}{root_link}")
+                except:
+                    pass
+                
+                with open(f"{DATA_PATH}{root_link}/{file_link}.html", 'w') as html_file:
                     html_file.write(html)
                 print(f"{seed} is saved to disk")
 
@@ -80,6 +93,7 @@ class Crawler:
                 # add other neighbors to queue
             print(f"{seed} took {time.time() - start:.2f} seconds")
             print()
+            time.sleep(3)
     
     def multithread_crawl(self, seeds, threads=5):
 
