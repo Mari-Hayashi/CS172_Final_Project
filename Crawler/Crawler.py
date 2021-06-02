@@ -1,50 +1,92 @@
 import os
 from queue import Queue
+import re
 import sys
 import threading
 import time
 
 
 import requests
+import urllib.robotparser
 from bs4 import BeautifulSoup
 import Helpers.PathHandler as PathHandler
 import Helpers.URLHandler as URLHandler
-import Helpers.RoboHandler as RoboHandler
 
 DATA_PATH = "crawl_data/"
 
 class Crawler:
     def __init__(self):
-        self.lines = []
-        self.seeds = []
+        self.visited = set()
         self.threads = []
-        self.permissions = dict()
         self.agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
         self.headers = requests.utils.default_headers()
         self.headers.update ({'User-Agent':self.agent})
         self.queue = Queue()
+        self.setlock = threading.Lock()
+        self.start = time.time()
+
+    def crawl(self, link):
+        page = requests.get(link)
+        soup = BeautifulSoup(page.content, "html.parser") 
+        for link in soup.find_all("a"):
+            if "href" in link.attrs:
+                new_link = link.attrs["href"] 
+                self.queue.put(new_link)
+        return str(soup)
 
     def crawl_worker(self):
         while not self.queue.empty():
+            start = time.time()
             seed = self.queue.get()
             root_link = URLHandler.root_link(seed)
             no_prefix_link = URLHandler.no_prefix_link(seed)
             prefix_link = URLHandler.add_prefix_link(seed)
             robots_link = URLHandler.robots_link(seed)
+            seed_dir = DATA_PATH + root_link
+            print(f"{seed} started at {start - self.start:.2f}")
+
+            """
+            Debugging:
+
             print(f"Seed: {seed}")
             print(f"Root Link: {root_link}")
             print(f"No Prefix Link: {no_prefix_link}")
             print(f"Prefix Link: {prefix_link}")
             print(f"Robots Link: {robots_link}")
-
-            seed_dir = DATA_PATH + root_link
             print(f"Seed Directory: {seed_dir}")
+    
+            """
 
-            robots = RoboHandler.build_robots(seed)
-            page = requests.get(prefix_link)
-            soup = BeautifulSoup(page.content, "html.parser")
-            # print(f"\n{soup.prettify()}")
 
+            update = False
+            try:
+                self.setlock.acquire()
+                if prefix_link not in self.visited:
+                    update = True 
+                    self.visited.add(prefix_link)
+                    print(f"{seed} has not been visited!") 
+                else:
+                    print(f"{seed} already visited!") 
+
+            # check if visited
+            # check robots.txt
+            # check duplicates
+
+            finally:
+                self.setlock.release()    
+                time.sleep(1)
+                
+            if update:
+                html = self.crawl(prefix_link)
+                file_link = re.sub("/", ".", no_prefix_link)
+                with open(DATA_PATH + f"{root_link}/{file_link}", 'w') as html_file:
+                    html_file.write(html)
+                print(f"{seed} is saved to disk")
+
+                # save results
+                # add other neighbors to queue
+            print(f"{seed} took {time.time() - start:.2f} seconds")
+            print()
     
     def multithread_crawl(self, seeds, threads=5):
 
@@ -75,4 +117,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     crawler = Crawler()
-    crawler.multithread_crawl(seeds=urls, threads=5)
+    crawler.multithread_crawl(seeds=urls, threads=12)
