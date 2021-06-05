@@ -1,7 +1,0 @@
-google.com
-bing.com
-yahoo.com
-facebook.com
-youtube.com
-netflix.com
-amazon.com
