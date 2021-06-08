@@ -9,14 +9,28 @@ function ResultsDisplay(props) {
         </div>)
     }
 
+    const titleStyle = {
+        color: "Aqua",
+        fontFamily: "Arial",
+        padding: "0px"
+    };
+    const linkStyle = {
+        fontSize: 17
+    }
+
     const site_list = []
     for (let site of retrieved_sites) {
-        site_list.push(<p>{site.title} <a href={site.link}>link</a> {site.score}</p>);
+        site_list.push(<div><div style={titleStyle}>{site.title}</div><a href={site.link} style={linkStyle}>{site.link}</a><br/>SCORE: {site.score}<br /><br /></div>);
     }
 
     return (<div>
         <h2>Found {site_list.length} results</h2>
-        {site_list}
+        <div
+            style={{
+                textAlign: "left"
+            }}
+        >
+            {site_list}</div>
     </div>)
 }
 
