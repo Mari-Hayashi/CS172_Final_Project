@@ -23,17 +23,18 @@ def ExtractHtmls(zip_folder_name, names_text_file):
     contents = []
     for file in allfiles[0:]:
         with open(file, 'r', encoding='ISO-8859-1') as f:
-            filename = file[len(zip_folder_name) + 1:]
-            if filename not in filename_to_link_map:
-                print(f"Warning! The file {filename} is missing link information in {names_text_file}. Skipping this file.")
-                continue
             soup = BeautifulSoup(f.read(), 'html.parser')
-            content = {
-                "title": FormatString(soup.title.string),
-                "body": FormatString(soup.get_text()),
-                "link": filename_to_link_map[filename]
-            }
-            contents.append(content)
+            if soup.title is not None and soup.title.string is not None: # If this is html
+                filename = file[2 * len(zip_folder_name) + 2:]
+                if filename not in filename_to_link_map:
+                    print(f"Warning! The file {filename} is missing link information in {names_text_file}. Skipping this file.")
+                    continue
+                content = {
+                    "title": FormatString(soup.title.string),
+                    "body": FormatString(soup.get_text()),
+                    "link": filename_to_link_map[filename]
+                }
+                contents.append(content)
     return contents
 
 parser = argparse.ArgumentParser()
