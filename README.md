@@ -85,12 +85,13 @@ Our crawler is multithreaded and can handle threads based on cpu and I/O limitat
 
 
 ### Part 2 - Indexer
-Instructions on how to deploy the system. Ideally, you should include an indexer.bat (Windows) or indexer.sh (Unix/Linux) executable file that takes as input all necessary parameters .  Example: [user@server] ./indexer.sh < output − dir >
 The crawler gives us a zip folder containing HTML files. Our code in ```html_upload.py``` parses the HTML files and creates a "bulk document". This information is then used to perform a bulk upload to ElasticSearch with curl commands that we wrote into the code. Doing so allows us to parse the HtmL files, format the uploads, and perform a bulk upload all in one file.
 
 Note: The HTML files in the zip file does not have a URL associated with it. What we did is we have a text file called ```filenames.txt```, which has mapping of the name of the HTML files to the link/URL. Our code references ```filenames.txt``` to get the link/URL for each HTML file.
 
-Thus, to perform all of the steps mentioned above, we can run the command ```python html_upload.py <html_folder_name> filesname.txt <index_name>```.
+Thus, to perform all of the steps mentioned above, we can run the command ```python html_upload.py <html_folder_name> filenames.txt <index_name>```.
+
+Also, during testing, we found that the operating system changes the format of the query string. What works on Windows fails on MacOS and vice versa. To address this issue, we added checks to determine the OS that the program is running on and return the correct format for the query string.
 
 ### Part 3 - Extension
 For an extension, we developed a web-based interface that allows user to enter the query and search for the documents that are relevant to the user query. I used React  to build the front-end components and Node.js to build the back-end component. Node.js communicate with the Elastic Search to get the results.
