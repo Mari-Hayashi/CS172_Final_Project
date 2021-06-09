@@ -11,11 +11,35 @@ Van and Mari worked on Part 2.
 Mari worked on Part 3.
 
 ### Part 1 - Crawler
-Overview of system, including (but not limited to)
-(a) Architecture
-(b) The Crawling or data collection strategy (do you handle duplicate URLs, is your crawler parallel, etc.)
-(c) Data Structures employed
-Limitations (if any) of the system.
+Overview of system, including (but not limited to)<br>
+(a) Architecture:
+```
+Crawler3/                   # crawler package
+    __init__.py
+    Crawler3.py             # crawler core
+    agents.txt              # list of agents for headers
+    Helpers/                # helper modules
+        FileHandler.py      # file helper - handles system directories / files
+        TimeHandler.py      # timer helper - handles timers for verbose flag
+        URLHandler.py       # url helper - simplifies urls
+        RoboHandler.py      # robo helper - INCOMPLETE manages robots.txt
+    Legacy/                 # legacy crawlers
+        Crawler1/
+        Crawler2/
+```
+
+Features - multithreading, argument parser, parallel thread for limits (depth, pages, size), handles url duplicates, random agent rotations, removes non-html extensions<br><br>
+Limitations - no robots.txt, no identifying duplicate pages, may reach a crawling limit due to in-memory visited links, cannot identify some non-html pages<br><br>
+Initial seeds are put into a queue with an initial depth of 0, and will be given to crawler threads. Crawler threads will first check if the given link is visited. If not, the crawling thread will identify neighboring links and add them to the queue with previous depth + 1. The crawling thread will then download the file, and encode the filename and store the encoding + the original url into a file for retrieval. This is because most operating systems have size limits to their filenames and urls can become very long. The crawlers will stop crawling when there are no more links in the queue, or the limits have been reached. A parallel limit thread will occasionally check if any limits have been surpassed, being the depth, download size, or page count. If any of these have been surpassed, then the parallel limit thread will signal to end all crawlers.<br>
+
+(b) The Crawling or data collection strategy (do you handle duplicate URLs, is your crawler parallel, etc.):<br>
+Our crawler is multithreaded and can handle threads based on cpu and I/O limitations of the computer running the crawler. We handle duplicate URLs by putting them in a visited set. With any of the data structures we use, we must apply blocking so that we don't get a race condition. Our queue, set, and decoding file has locks to ensure that no threads will write simultaneously.
+
+(c) Data Structures employed:
+- Locks (for all data structures)
+- Links Queue (for next to visit)
+- Visited Set (for urls already visited)
+- Decoder File (to append decoding + url pairs)
 
 #### Crawler Setup Instructions
 
@@ -36,6 +60,7 @@ Limitations (if any) of the system.
 ```
 
 4. You should be able to run the crawler now. (crawl.py)
+<br><br>
 
 
 
@@ -48,63 +73,12 @@ Limitations (if any) of the system.
 
 2. To run the crawler on urls up to a depth of 3
 ```
-    $ python crawler.py --url google.com bing.com yahoo.com -depth 3
+    python crawler.py --url google.com bing.com yahoo.com -depth 3
 ```
 
-3. To run the crawler on a file of urls on 10 threads up to 1000 pages
+3. To run the crawler on a file of urls on 20 threads up to 10000 pages
 ```
-    $ python crawler.py --urlfile urls.txt -pages 10000 -threads 10
-```
-
-crawl.py --help
-
-```
-usage: crawl.py [-h] (--url URL [URL ...] | --urlfile [URLFILE])
-                [--output OUTPUT] [--decoder DECODER] [-depth DEPTH]
-                [-size SIZE] [-pages PAGES] [-threads [THREADS]]
-                [-interval [INTERVAL]] [-verbose] [-clean]
-
-Crawl websites and store html files locally
-
-optional arguments:
-  -h, --help            show this help message and exit
-
-INPUTS:
-  Set input urls
-
-  --url URL [URL ...]   urls to scrape, use the --urlfile flag to load urls
-                        from a file instead
-  --urlfile [URLFILE]   input file with urls
-
-OUTPUT:
-  Set output names
-
-  --output OUTPUT       output zipfile, default = htmls/
-  --decoder DECODER     decoder of file names, default = filenames.txt
-
-LIMITS:
-  Set limits on crawling, default = 100 pages
-
-  -depth DEPTH          depth of crawling
-  -size SIZE            crawling size
-  -pages PAGES          number of pages
-
-SETTINGS:
-  Set settings for crawler
-
-  -threads [THREADS]    set number of threads, default = 1
-  -interval [INTERVAL]  set crawling wait interval, default = 1
-  -verbose              enable verbose actions, default = false
-  -clean                clean old crawled data, default = false
-
-Examples: 
-
-    python crawl.py -h                                    ===>   Launch help page with all options
-    python crawl.py --url google.com                      ===>   Crawl google.com with default depth 1
-    python crawl.py --url google.com bing.com yahoo.com   ===>   Crawl multiple links
-    python crawl.py --url google.com --verbose            ===>   Crawl google.com with verbose prints
-    python crawl.py --urlfile urls.txt                    ===>   Crawl urls listed in urls.txt file
-    python crawl.py --urlfile urls.txt -threads 5         ===>   Crawl urls.txt with 5 threads
+    python crawler.py --urlfile urls.txt -pages 10000 -threads 20
 ```
 
 
