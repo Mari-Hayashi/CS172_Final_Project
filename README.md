@@ -1,20 +1,14 @@
 # CS172 - Final Project
 
-## Team member 1 - Van Truong
-## Team member 2 - Mari Hayashi
-## Team member 3 - Richard Duong
-
-
 ## Team members
 - Van Truong (vtruo009)
 - Mari Hayashi (mhaya010)
 - Richard Duong (rduon008)
 
-
-
 ## Collaboration Details
-
-
+Richard worked on Part 1.
+Van and Mari worked on Part 2.
+Mari worked on Part 3.
 
 ### Part 1 - Crawler
 Overview of system, including (but not limited to)
@@ -62,8 +56,6 @@ For an extension, we developed a web-based interface that allows user to enter t
 
 The ranked documents output from the Elastic Search is in a json format, so the users who are not familiar with json-format will have difficulty going through the results. Having web-based interface allows the users to see the ranked documents result in a formatted way and easily navigate through the results.
 
-[Include screenshot here.]
-=======
 #### Steps to view  the website
 
 1. Run the following commands to install server dependencies and start the server program.
