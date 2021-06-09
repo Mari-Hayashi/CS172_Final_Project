@@ -1,0 +1,9 @@
+ucr.edu
+ucsb.edu
+ucla.edu
+ucsd.edu
+ucd.edu
+ucsc.edu
+uci.edu
+ucsf.edu
+ucm.edu

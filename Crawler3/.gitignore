@@ -1,0 +1,4 @@
+crawl_data/
+filenames.txt
+*.log
+*.swp
