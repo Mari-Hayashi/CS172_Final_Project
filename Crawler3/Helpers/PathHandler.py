@@ -72,5 +72,13 @@ def generate_unique_filename():
     return f"{uuid.uuid4().hex}"
 
 
+# identify files we do not want to scrape
+def non_html_file(url):
+    extensions = (".mp3", ".mp4", ".wav", ".ogg", ".jpg", ".png", ".pdf", ".doc")
+    if url.endswith(extensions):
+        return True
+    return False
+
+
 
 

@@ -4,19 +4,21 @@ import os
 from queue import Queue
 import random
 import re
+import shutil
 import sys
 import threading
 import time
 
 import requests
 from bs4 import BeautifulSoup
-import Helpers.PathHandler as PathHandler
-import Helpers.URLHandler as URLHandler
-import Helpers.TimeHandler as TimeHandler
+import Crawler3.Helpers.PathHandler as PathHandler
+import Crawler3.Helpers.URLHandler as URLHandler
+import Crawler3.Helpers.TimeHandler as TimeHandler
 
-CRAWL_DATA="crawl_data"
+CRAWL_DATA="htmls"
 FILENAME="filenames.txt"
-AGENTS="agents.txt"
+AGENTS="Crawler3/agents.txt"
+DEFAULT_OUTPUT="htmls"
 
 # Todo-list:
 # 1. Add verbose option (time prints & identity) -> DONE
@@ -29,26 +31,30 @@ AGENTS="agents.txt"
 
 
 class Crawler:
-    def __init__(self, urls=[], size=None, depth=None, attempts=10, verbose=False, filename=FILENAME, interval=1):
+    def __init__(self, urls=[], size=None, depth=None, attempts=5, verbose=False, filename=FILENAME, interval=1, output=CRAWL_DATA):
         self.visited = set()                # set of links that have already been visited / scraped
         self.visitLock = threading.Lock()   # mutex lock for visited set
         self.filename = filename            # file for storing filename conversions
-        self.fileLock = threading.Lock()    # mutext lock for filenames.txt
+        self.fileLock = threading.Lock()    # mutex lock for filenames.txt
+        self.queue = Queue()                # queue for links to crawl
+        self.queueLock = threading.Lock()   # mutex lock for accessing queue
 
         self.threads = []                   # keeps track of running threads
         self.start = time.time()            # keeps track of timer
-        self.queue = Queue()                # queue for links to crawl
 
+
+        self.ismaxdepth = False             # flag for reaching max depth
         self.maxdepth = depth               # default max depth
         self.maxsize = size                 # default max size in mb to crawl
         self.full = False                   # boolean flag to signify crawled max data
         self.attempts = attempts            # number of attempts from each thread to access queue before closing
         self.verbose = verbose              # enable/disable verbose info while crawling
         self.interval = interval            # how long to wait between scraping next item
+        self.output = output                # output folder for downloads
 
-        # set default depth to 5 if no limit is set
+        # set default depth to 1 if no limit is set
         if not depth and not size:
-            self.maxdepth = 5
+            self.maxdepth = 1
 
         # read in list of agents
         with open(AGENTS, "r") as agents_file:
@@ -82,8 +88,8 @@ class Crawler:
             self.fileLock.release()
 
         # save html document into crawl_data/ directory
-        html_name = f"{CRAWL_DATA}/{url_encoding_str}.html"
-        PathHandler.make_dirs(f"{CRAWL_DATA}")
+        html_name = f"{self.output}/{url_encoding_str}.html"
+        PathHandler.make_dirs(f"{self.output}")
         with open(html_name, "w") as html_file:
             html_file.write(text)
 
@@ -134,7 +140,7 @@ class Crawler:
                 if clean_link:
                     neighbors.append(clean_link) 
 
-        return soup.text, neighbors
+        return page.text, neighbors
 
 
 
@@ -156,7 +162,7 @@ class Crawler:
         while cur_size <= self.maxsize:
             time.sleep(interval)
             cur_size = PathHandler.get_dir_size(src_path, datatype="mb")
-            timer.end(desc=f"CRAWLED {cur_size} out of {self.maxsize} MEGABYTES") 
+            timer.end(desc=f"CRAWLED {cur_size:.3f} out of {self.maxsize:.3f} MB") 
             if len(self.threads) == 0:
                 return 
         timer.start(desc=f"SIZE has hit capacity, shutting off")  
@@ -186,9 +192,11 @@ class Crawler:
 
         # append neighbors to queue
         for neighbor in neighbors:
-            self.queue.put((neighbor, cur_depth + 1))
-
-
+            try:
+                self.queueLock.acquire()
+                self.queue.put((neighbor, cur_depth + 1))
+            finally:
+                self.queueLock.release()
 
     # crawl worker for multithreading
     def crawl_worker(self, identity):
@@ -199,16 +207,29 @@ class Crawler:
         tries = 0
         while tries < self.attempts:
             tries += 1
-            if not self.queue.empty() and not self.full:
-                while not self.queue.empty() and not self.full:
-                    item = self.queue.get() 
+            if not self.queue.empty() and not self.full and not self.ismaxdepth:
+                while not self.queue.empty() and not self.full and not self.ismaxdepth:
+        
+                    # attempt to get from queue
+                    try:
+                        item = self.queue.get() 
+                    except Queue.Empty:
+                        print(f"Crawler #{identity} Queue is empty!")
+                        continue
+                        
                     url = item[0]
                     cur_depth = item[1]
 
                     # skip link if beyond depth
                     if self.maxdepth:
                         if cur_depth > self.maxdepth:
+                            print("Crawler #{identity} hit max depth")
+                            self.ismaxdepth = True
                             continue
+
+                    # skip link if non-html file
+                    if PathHandler.non_html_file(url):
+                        continue
 
                     timer.start(desc=f"START CRAWL {URLHandler.root(url)} DEPTH: {cur_depth}")
                     status = self.crawl(url, cur_depth)
@@ -228,7 +249,7 @@ class Crawler:
         
         # one thread to check the size if flagged
         if self.maxsize:
-            size_thread = threading.Thread(target=self.size_worker, args=(CRAWL_DATA + "/",))
+            size_thread = threading.Thread(target=self.size_worker, args=(f"{self.output}/",))
             size_thread.start()
 
         # create and start threads for crawling
@@ -240,11 +261,25 @@ class Crawler:
         # wait for threads to finish before resuming multithreading
         for i in range(threads):
             self.threads[i].join() 
+ 
+        # zip the file
+        shutil.make_archive(self.output, 'zip', self.output)
 
 
 # run parser and crawler
 def run():
-    parser = argparse.ArgumentParser(description="Crawl websites and store html files locally")
+
+    # custom help text
+    examples_prompt=f"""Examples:
+    
+    python {sys.argv[0]} google.com                             ===>   Crawl google.com with default depth 1
+    python {sys.argv[0]} google.com bing.com yahoo.com          ===>   Crawl multiple links
+    python {sys.argv[0]} google.com --verbose                   ===>   Crawl google.com with verbose prints
+    python {sys.argv[0]} --filename urls.txt                    ===>   Crawl urls listed in urls.txt file
+    python {sys.argv[0]} --filename urls.txt --threads 5        ===>   Crawl urls.txt with 5 threads"""
+
+    # generate argument parser
+    parser = argparse.ArgumentParser(description="Crawl websites and store html files locally", epilog=examples_prompt, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("inputs", help="<Required> urls to scrape, use the --filename flag to load urls from a file instead", nargs="+")
     parser.add_argument("--filename", help="name of file with urls", action="store_true")     
     parser.add_argument("--threads", help="number of threads", type=int, nargs="?", default=1, const=1)
@@ -257,6 +292,7 @@ def run():
     group1.add_argument("--size", help="crawling size", type=int)
     args = parser.parse_args()
 
+    # extract urls from filename
     if args.filename:
         urls = []
         for filename in args.inputs:
