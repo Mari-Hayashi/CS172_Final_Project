@@ -1,2 +1,8 @@
+env/
+crawl_data/
+__pycache__/
+filenames.txt
+htmls/
+htmls.zip
 react-app-project/node_modules/
 react-app-project/package-lock.json

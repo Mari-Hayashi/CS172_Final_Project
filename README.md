@@ -1,14 +1,19 @@
 # CS172 - Final Project
 
+## Team member 1 - Van Truong
+## Team member 2 - Mari Hayashi
+## Team member 3 - Richard Duong
+
+
 ## Team members
 - Van Truong (vtruo009)
 - Mari Hayashi (mhaya010)
 - Richard Duong (rduon008)
 
-## How to run our program
 
 
 ## Collaboration Details
+
 
 
 ### Part 1 - Crawler
@@ -17,6 +22,36 @@ Overview of system, including (but not limited to)
 (b) The Crawling or data collection strategy (do you handle duplicate URLs, is your crawler parallel, etc.)
 (c) Data Structures employed
 Limitations (if any) of the system.
+
+#### Crawler Setup Instructions
+```
+Move to project directory
+=========================
+$ cd CS172_FinalProject
+
+Generate Virtual Environment
+============================
+$ chmod +x scripts/setup.sh
+$ scripts/setup.sh
+
+Load Virtual Environment
+========================
+$ source env/bin/activate
+
+Run the crawler
+===============
+$ cd Crawler
+$ python Crawler.py --url google.com
+or
+$ python Crawler.py --file urls.txt
+
+```
+
+#### Run Crawler Script
+... to be filled
+
+
+
 Instruction on how to deploy the crawler. Ideally, you should include a crawler.bat (Windows) or crawler.sh (Unix/Linux) executable file that takes as input all necessary parameters. Example instructions for Web-based assignment: [user@server]./crawler.sh < seed − Fileseed.txt > < num − pages : 10000 > < hops − away : 6 > <output−dir >
 
 ### Part 2 - Indexer
@@ -27,6 +62,8 @@ For an extension, we developed a web-based interface that allows user to enter t
 
 The ranked documents output from the Elastic Search is in a json format, so the users who are not familiar with json-format will have difficulty going through the results. Having web-based interface allows the users to see the ranked documents result in a formatted way and easily navigate through the results.
 
+[Include screenshot here.]
+=======
 #### Steps to view  the website
 
 1. Run the following commands to install server dependencies and start the server program.
