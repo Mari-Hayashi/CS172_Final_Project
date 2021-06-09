@@ -1,4 +1,4 @@
-# CS172 - Final Project
+\\\\# CS172 - Final Project
 
 ## Team members
 - Van Truong (vtruo009)
@@ -83,7 +83,6 @@ Our crawler is multithreaded and can handle threads based on cpu and I/O limitat
 
 
 
-Instruction on how to deploy the crawler. Ideally, you should include a crawler.bat (Windows) or crawler.sh (Unix/Linux) executable file that takes as input all necessary parameters. Example instructions for Web-based assignment: [user@server]./crawler.sh < seed − Fileseed.txt > < num − pages : 10000 > < hops − away : 6 > <output−dir >
 
 ### Part 2 - Indexer
 Instructions on how to deploy the system. Ideally, you should include an indexer.bat (Windows) or indexer.sh (Unix/Linux) executable file that takes as input all necessary parameters .  Example: [user@server] ./indexer.sh < output − dir >
