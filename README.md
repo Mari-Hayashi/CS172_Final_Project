@@ -50,6 +50,11 @@ Instruction on how to deploy the crawler. Ideally, you should include a crawler.
 
 ### Part 2 - Indexer
 Instructions on how to deploy the system. Ideally, you should include an indexer.bat (Windows) or indexer.sh (Unix/Linux) executable file that takes as input all necessary parameters .  Example: [user@server] ./indexer.sh < output − dir >
+The crawler gives us a zip folder containing HTML files. Our code in ```html_upload.py``` parses the HTML files and creates a "bulk document". This information is then used to perform a bulk upload to ElasticSearch with curl commands that we wrote into the code. Doing so allows us to parse the HtmL files, format the uploads, and perform a bulk upload all in one file.
+
+Note: The HTML files in the zip file does not have a URL associated with it. What we did is we have a text file called ```filenames.txt```, which has mapping of the name of the HTML files to the link/URL. Our code references ```filenames.txt``` to get the link/URL for each HTML file.
+
+Thus, to perform all of the steps mentioned above, we can run the command ```python html_upload.py <html_folder_name> filesname.txt <index_name>```.
 
 ### Part 3 - Extension
 For an extension, we developed a web-based interface that allows user to enter the query and search for the documents that are relevant to the user query. I used React  to build the front-end components and Node.js to build the back-end component. Node.js communicate with the Elastic Search to get the results.
