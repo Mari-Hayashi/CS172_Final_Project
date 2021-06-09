@@ -51,7 +51,7 @@ Our crawler is multithreaded and can handle threads based on cpu and I/O limitat
 2. Generate Virtual Environment
 ```
     chmod +x scripts/setup.sh
-    scripts.setup.sh
+    ./scripts/setup/sh
 ```
 
 3. Load Virtual Environment
@@ -71,14 +71,14 @@ Our crawler is multithreaded and can handle threads based on cpu and I/O limitat
     python crawl.py --help
 ```
 
-2. To run the crawler on urls up to a depth of 3
+2. To run the crawler on urls up to a depth of 3 (verbose)
 ```
-    python crawler.py --url google.com bing.com yahoo.com -depth 3
+    python crawler.py --url google.com bing.com yahoo.com -depth 3 -verbose
 ```
 
-3. To run the crawler on a file of urls on 20 threads up to 10000 pages
+3. To run the crawler on a file of urls on 20 threads up to 10000 pages (verbose)
 ```
-    python crawler.py --urlfile urls.txt -pages 10000 -threads 20
+    python crawler.py --urlfile urls.txt -pages 10000 -threads 20 -verbose
 ```
 
 
