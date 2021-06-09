@@ -6,7 +6,12 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 function GetQuery(query_string) {
-    return util.format('{"query": {"match": {"body": "%s"} }}', query_string)
+    if (process.platform !== "win32") {
+        return util.format('{\\"query\\": {\\"match\\": {\\"body\\": \\"%s\\"} }}', query_string)
+    }
+    else {
+        return util.format('{"query": {"match": {"body": "%s"} }}', query_string)
+    }
 }
 
 // Run the command and return stdout
@@ -28,10 +33,10 @@ async function ElasticSearch(query_string) {
         error_message: ''
     }
 
-    const command = util.format('echo %s > query.txt', GetQuery(query_string))
+    const command = util.format('echo %s > query.json', GetQuery(query_string))
     await RunCommand(command)
 
-    const elastic_search_command = 'curl -X GET -u elastic:WLBCezXn0g7t6xNdzPclj0ke "https://cs172-vrm.es.us-west1.gcp.cloud.es.io:9243/my-first-index/_search?pretty" -H "Content-Type: application/json" -d @query.txt'
+    const elastic_search_command = 'curl -X GET -u elastic:WLBCezXn0g7t6xNdzPclj0ke "https://cs172-vrm.es.us-west1.gcp.cloud.es.io:9243/my-first-index/_search?pretty" -H "Content-Type: application/json" -d @query.json'
     try {
         const search_stdout = await RunCommand(elastic_search_command)
         const search_results = JSON.parse(search_stdout)
