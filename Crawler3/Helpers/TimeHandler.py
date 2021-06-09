@@ -53,3 +53,19 @@ class TimeHandler:
 
 
 
+
+    def signal(self, desc=None):
+
+        # define prompt
+        self.signal_time = time.time()
+        default_signal_prompt = f"{self.name:30} {'signal':50} {'GLOBAL_TIME:':15} {self.signal_time - GLOBAL_START:.2f} seconds" 
+
+        # record times
+        if self.verbose and not desc:
+            print(f"{default_start_prompt}")
+        elif self.verbose and desc:
+            print(f"{self.name:30} {desc:50} {'GLOBAL_TIME:':15} {self.signal_time - GLOBAL_START:.2f} seconds")
+
+
+
+
