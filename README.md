@@ -91,12 +91,12 @@ Note: The HTML files in the zip file does not have a URL associated with it. Wha
 
 Thus, to perform all of the steps mentioned above, we can run the command ```python html_upload.py <html_folder_name> filenames.txt <index_name>```.
 
-Also, during testing, we found that the operating system changes the format of the query string. What works on Windows fails on MacOS and vice versa. To address this issue, we added checks to determine the OS that the program is running on and return the correct format for the query string.
-
 ### Part 3 - Extension
 For an extension, we developed a web-based interface that allows user to enter the query and search for the documents that are relevant to the user query. I used React  to build the front-end components and Node.js to build the back-end component. Node.js communicate with the Elastic Search to get the results.
 
 The ranked documents output from the Elastic Search is in a json format, so the users who are not familiar with json-format will have difficulty going through the results. Having web-based interface allows the users to see the ranked documents result in a formatted way and easily navigate through the results.
+
+Also, during testing, we found that the operating system changes the format of the query string. What works on Windows fails on MacOS and vice versa. To address this issue, we added checks to determine the OS that the program is running on and return the correct format for the query string.
 
 #### Steps to view  the website
 
