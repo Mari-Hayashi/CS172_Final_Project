@@ -1,4 +1,4 @@
-\\\\# CS172 - Final Project
+# CS172 - Final Project
 
 ## Team members
 - Van Truong (vtruo009)
