@@ -27,6 +27,25 @@ For an extension, we developed a web-based interface that allows user to enter t
 
 The ranked documents output from the Elastic Search is in a json format, so the users who are not familiar with json-format will have difficulty going through the results. Having web-based interface allows the users to see the ranked documents result in a formatted way and easily navigate through the results.
 
+#### Steps to view  the website
+
+1. Run the following commands to install server dependencies and start the server program.
+```
+    cd react-app-project
+    npm install
+    npm start
+```
+
+2. In another command prompt window, run the following commands to install client dependencies and start the client program.
+
+```
+    cd react-app-project
+    cd client
+    npm install
+    npm start
+```
+When the client side starts, the website opens in new window automatically.
+
 ![Alt Image text](/images/1.gif)
 ![Alt Image text](/images/1.png?raw=true)
 ![Alt Image text](/images/2.png?raw=true)
