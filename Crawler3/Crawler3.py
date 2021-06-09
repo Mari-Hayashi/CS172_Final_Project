@@ -24,7 +24,7 @@ DECODER="filenames.txt"
 INPUT="urls.txt"
 OUTPUT="htmls"
 
-ATTEMPTS=5
+ATTEMPTS=2
 PAGES=100
 THREADS=1
 
