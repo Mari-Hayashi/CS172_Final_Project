@@ -27,4 +27,7 @@ For an extension, we developed a web-based interface that allows user to enter t
 
 The ranked documents output from the Elastic Search is in a json format, so the users who are not familiar with json-format will have difficulty going through the results. Having web-based interface allows the users to see the ranked documents result in a formatted way and easily navigate through the results.
 
-[Include screenshot here.]
+![Alt Image text](/images/1.gif)
+![Alt Image text](/images/1.png?raw=true)
+![Alt Image text](/images/2.png?raw=true)
+![Alt Image text](/images/3.png?raw=true)
