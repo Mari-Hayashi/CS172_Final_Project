@@ -391,22 +391,27 @@ class Crawler:
 def run():
 
     # custom help text
-    examples_prompt=f"""Examples:
-    
-    python {sys.argv[0]} google.com                             ===>   Crawl google.com with default depth 1
-    python {sys.argv[0]} google.com bing.com yahoo.com          ===>   Crawl multiple links
-    python {sys.argv[0]} google.com --verbose                   ===>   Crawl google.com with verbose prints
-    python {sys.argv[0]} --urlfiles urls.txt                    ===>   Crawl urls listed in urls.txt file
-    python {sys.argv[0]} --urlfiles urls.txt -threads 5         ===>   Crawl urls.txt with 5 threads"""
+    examples_prompt=f"""Examples: 
+
+    python {sys.argv[0]} -h                                    ===>   Launch help page with all options
+    python {sys.argv[0]} --url google.com                      ===>   Crawl google.com with default depth 1
+    python {sys.argv[0]} --url google.com bing.com yahoo.com   ===>   Crawl multiple links
+    python {sys.argv[0]} --url google.com --verbose            ===>   Crawl google.com with verbose prints
+    python {sys.argv[0]} --urlfile urls.txt                    ===>   Crawl urls listed in urls.txt file
+    python {sys.argv[0]} --urlfile urls.txt -threads 5         ===>   Crawl urls.txt with 5 threads"""
 
 
-    # name arguments
+    # input arguments
     parser = argparse.ArgumentParser(description="Crawl websites and store html files locally", epilog=examples_prompt, formatter_class=argparse.RawDescriptionHelpFormatter)
-    nameGroup = parser.add_argument_group("NAMES", "Set input and output names")
-    nameGroup.add_argument("url", help="urls to scrape, use the --urlfile flag to load urls from a file instead", nargs="*")
-    nameGroup.add_argument("--urlfile", help="input file with urls", default=INPUT)
-    nameGroup.add_argument("--output", help="output zipfile, default = htmls/", default=OUTPUT)
-    nameGroup.add_argument("--decoder", help="decoder of file names,  default = filenames.txt", default=DECODER)
+    iGroup = parser.add_argument_group("INPUTS", "Set input urls")
+    inputGroup = iGroup.add_mutually_exclusive_group(required=True)
+    inputGroup.add_argument("--url", help="urls to scrape, use the --urlfile flag to load urls from a file instead", nargs="+")
+    inputGroup.add_argument("--urlfile", help="input file with urls", const=INPUT, nargs="?")
+
+    # output arguments
+    outputGroup = parser.add_argument_group("OUTPUT", "Set output names")
+    outputGroup.add_argument("--output", help="output zipfile, default = htmls/", default=OUTPUT)
+    outputGroup.add_argument("--decoder", help="decoder of file names,  default = filenames.txt", default=DECODER)
 
     # limit arguments
     limitGroup = parser.add_argument_group("LIMITS", "Set limits on crawling, default = 100 pages")

@@ -18,31 +18,94 @@ Overview of system, including (but not limited to)
 Limitations (if any) of the system.
 
 #### Crawler Setup Instructions
+
+1. Move to project directory
 ```
-Move to project directory
-=========================
-$ cd CS172_FinalProject
-
-Generate Virtual Environment
-============================
-$ chmod +x scripts/setup.sh
-$ scripts/setup.sh
-
-Load Virtual Environment
-========================
-$ source env/bin/activate
-
-Run the crawler
-===============
-$ cd Crawler
-$ python Crawler.py --url google.com
-or
-$ python Crawler.py --file urls.txt
-
+    cd CS172_Final_Project
 ```
 
-#### Run Crawler Script
-... to be filled
+2. Generate Virtual Environment
+```
+    chmod +x scripts/setup.sh
+    scripts.setup.sh
+```
+
+3. Load Virtual Environment
+```
+    source env/bin/activate
+```
+
+4. You should be able to run the crawler now. (crawl.py)
+
+
+
+#### How to run the crawler
+
+1. To view the help (recommended)
+```
+    python crawl.py --help
+```
+
+2. To run the crawler on urls up to a depth of 3
+```
+    $ python crawler.py --url google.com bing.com yahoo.com -depth 3
+```
+
+3. To run the crawler on a file of urls on 10 threads up to 1000 pages
+```
+    $ python crawler.py --urlfile urls.txt -pages 10000 -threads 10
+```
+
+crawl.py --help
+
+```
+usage: crawl.py [-h] (--url URL [URL ...] | --urlfile [URLFILE])
+                [--output OUTPUT] [--decoder DECODER] [-depth DEPTH]
+                [-size SIZE] [-pages PAGES] [-threads [THREADS]]
+                [-interval [INTERVAL]] [-verbose] [-clean]
+
+Crawl websites and store html files locally
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+INPUTS:
+  Set input urls
+
+  --url URL [URL ...]   urls to scrape, use the --urlfile flag to load urls
+                        from a file instead
+  --urlfile [URLFILE]   input file with urls
+
+OUTPUT:
+  Set output names
+
+  --output OUTPUT       output zipfile, default = htmls/
+  --decoder DECODER     decoder of file names, default = filenames.txt
+
+LIMITS:
+  Set limits on crawling, default = 100 pages
+
+  -depth DEPTH          depth of crawling
+  -size SIZE            crawling size
+  -pages PAGES          number of pages
+
+SETTINGS:
+  Set settings for crawler
+
+  -threads [THREADS]    set number of threads, default = 1
+  -interval [INTERVAL]  set crawling wait interval, default = 1
+  -verbose              enable verbose actions, default = false
+  -clean                clean old crawled data, default = false
+
+Examples: 
+
+    python crawl.py -h                                    ===>   Launch help page with all options
+    python crawl.py --url google.com                      ===>   Crawl google.com with default depth 1
+    python crawl.py --url google.com bing.com yahoo.com   ===>   Crawl multiple links
+    python crawl.py --url google.com --verbose            ===>   Crawl google.com with verbose prints
+    python crawl.py --urlfile urls.txt                    ===>   Crawl urls listed in urls.txt file
+    python crawl.py --urlfile urls.txt -threads 5         ===>   Crawl urls.txt with 5 threads
+```
 
 
 
