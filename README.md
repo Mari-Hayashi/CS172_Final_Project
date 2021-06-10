@@ -1,4 +1,5 @@
 # CS172 - Final Project
+(https://github.com/Mari-Hayashi/CS172_Final_Project)
 
 ## Team members
 - Van Truong (vtruo009)
