@@ -1,4 +1,5 @@
 # CS172 - Final Project
+(https://github.com/Mari-Hayashi/CS172_Final_Project)
 
 ## Team members
 - Van Truong (vtruo009)
@@ -89,7 +90,13 @@ The crawler gives us a zip folder containing HTML files. Our code in ```html_upl
 
 Note: The HTML files in the zip file does not have a URL associated with it. What we did is we have a text file called ```filenames.txt```, which has mapping of the name of the HTML files to the link/URL. Our code references ```filenames.txt``` to get the link/URL for each HTML file.
 
-Thus, to perform all of the steps mentioned above, we can run the command ```python html_upload.py htmls filenames.txt <any_index_name>```.
+Thus, to perform all of the steps mentioned above, we can run the following command:
+```
+python html_upload.py htmls filenames.txt <index_name>
+```
+Requirements:
+- Have python installed
+- Have beautiful soup installed
 
 ### Part 3 - Extension
 For an extension, we developed a web-based interface that allows user to enter the query and search for the documents that are relevant to the user query. I used React  to build the front-end components and Node.js to build the back-end component. Node.js communicate with the Elastic Search to get the results.
@@ -115,7 +122,12 @@ Also, during testing, we found that the operating system changes the format of t
     npm install
     npm start
 ```
-When the client side starts, the website opens in new window automatically.
+
+3. After running the client command above, the website opens in new window automatically.
+
+Requirements:
+- Have npm installed
+- Have Node.js installed
 
 ![Alt Image text](/images/1.gif)
 ![Alt Image text](/images/1.png?raw=true)
