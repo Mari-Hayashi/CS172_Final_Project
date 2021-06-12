@@ -72,14 +72,9 @@ Our crawler is multithreaded and can handle threads based on cpu and I/O limitat
     python crawl.py --help
 ```
 
-2. To run the crawler on urls up to a depth of 3 (verbose)
+3. To run the crawler on a file of urls on 20 threads up to 50 pages (run to completion)
 ```
-    python crawler.py --url google.com bing.com yahoo.com -depth 3 -verbose
-```
-
-3. To run the crawler on a file of urls on 20 threads up to 10000 pages (verbose)
-```
-    python crawler.py --urlfile urls.txt -pages 10000 -threads 20 -verbose
+    python crawler.py --urlfile urls.txt -pages 50 -threads 20 -verbose -clean
 ```
 
 

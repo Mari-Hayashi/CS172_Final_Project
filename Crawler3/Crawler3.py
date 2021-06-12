@@ -20,6 +20,7 @@ import Crawler3.Helpers.URLHandler as URLHandler
 from Crawler3.Helpers.TimeHandler import TimeHandler
 
 AGENTS="/Crawler3/agents.txt"
+BASE_DIR="."
 DECODER="filenames.txt"
 INPUT="urls.txt"
 OUTPUT="htmls"
@@ -381,7 +382,7 @@ class Crawler:
         time.sleep(3)
  
         # zip the file, remove temp directory
-        shutil.make_archive(self.output, 'zip', self.output)
+        shutil.make_archive(self.output, 'zip', BASE_DIR, self.output)
         shutil.rmtree(self.output, ignore_errors=True)
 
 

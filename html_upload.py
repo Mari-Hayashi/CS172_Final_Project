@@ -19,14 +19,20 @@ def ExtractHtmls(zip_folder_name, names_text_file):
     # Retrieve the names of all html files
     for dir_path, dir_names, file_names in os.walk(zip_folder_name):
         allfiles = [os.path.join(dir_path, filename).replace("\\", "/") for filename in file_names if (filename != "readme" and filename != ".DS_Store" and filename[len(filename) - 5:] == ".html")]
-    
-    print(f"Found {len(allfiles)} html files! Parsing...")
+
     contents = []
     for file in allfiles:
         with open(file, 'r', encoding='ISO-8859-1') as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
             if soup.title is not None and soup.title.string is not None: # If this is html
-                filename = file[2 * len(zip_folder_name) + 2:]
+        
+                # if windows
+                if os.name == "nt":
+                    filename = file[2 * len(zip_folder_name) + 2:] 
+
+                # if non-windows
+                else:
+                    filename = file[len(zip_folder_name) + 1:]
                 if filename not in filename_to_link_map:
                     print(f"Warning! The file {filename} is missing link information in {names_text_file}. Skipping this file.")
                     continue
